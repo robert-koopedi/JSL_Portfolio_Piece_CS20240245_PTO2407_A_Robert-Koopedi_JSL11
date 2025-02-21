@@ -163,16 +163,27 @@ function addTaskToUI(task) {
 
 
 function setupEventListeners() {
+    document.getElementById('cancel-edit-btn').addEventListener('click', () => toggleModal(false, elements.editTaskModal));
+    document.getElementById('cancel-add-task-btn').addEventListener('click', () => toggleModal(false));
+    elements.hideSideBarBtn.addEventListener('click', () => toggleSidebar(false));
+    elements.showSideBarBtn.addEventListener('click', () => toggleSidebar(true));
+    elements.themeSwitch.addEventListener('change', toggleTheme);
+    elements.createNewTaskBtn.addEventListener('click', () => toggleModal(true));
+    elements.modalWindow.addEventListener('submit', addTask);
+  }
+  
   // Cancel editing task event listener
-  const cancelEditBtn = document.getElementById('cancel-edit-btn');
-  cancelEditBtn.click() => toggleModal(false, elements.editTaskModal));
-
+   // Cancel editing task event listener
+   const cancelEditBtn = document.getElementById('cancel-edit-btn');
+   cancelEditBtn.addEventListener('click',() => toggleModal(false, elements.editTaskModal)); //fix: added an event listener
+ 
   // Cancel adding new task event listener
   const cancelAddTaskBtn = document.getElementById('cancel-add-task-btn');
   cancelAddTaskBtn.addEventListener('click', () => {
     toggleModal(false);
     elements.filterDiv.style.display = 'none'; // Also hide the filter overlay
   });
+
 
   // Clicking outside the modal to close it
   elements.filterDiv.addEventListener('click', () => {
@@ -181,8 +192,8 @@ function setupEventListeners() {
   });
 
   // Show sidebar event listener
-  elements.hideSideBarBtn.click() => toggleSidebar(false));
-  elements.showSideBarBtn.click() => toggleSidebar(true));
+  elements.hideSideBarBtn.addEventListener('click',() => toggleSidebar(false));// fix: added an event lister
+  elements.showSideBarBtn.addEventListener('click',() => toggleSidebar(true)); //fix: added an event listener
 
   // Theme switch event listener
   elements.themeSwitch.addEventListener('change', toggleTheme);
@@ -197,13 +208,13 @@ function setupEventListeners() {
   elements.modalWindow.addEventListener('submit',  (event) => {
     addTask(event)
   });
-}
 
 // Toggles tasks modal
 // Task: Fix bugs
 function toggleModal(show, modal = elements.modalWindow) {
-  modal.style.display = show ? 'block' => 'none'; 
+  modal.style.display = show ? 'block' : 'none'; //fix: used the correct tirnary operator
 }
+
 
 /*************************************************************************************************************************************************
  * COMPLETE FUNCTION CODE
