@@ -83,14 +83,14 @@ function displayBoards(boards) {
 // TASK: Fix Bugs
 function filterAndDisplayTasksByBoard(boardName) {
   const tasks = getTasks(); // Fetch tasks from a simulated local storage function
-  const filteredTasks = tasks.filter(task => task.board === boardName);
-  const filteredTasks = tasks.filter(task => task.board = boardName);
+  const filteredTasks = tasks.filter(task => task.board === boardName); //fix: added the correct syntax
 
   // Ensure the column titles are set outside of this function or correctly initialized before this function runs
 
   elements.columnDivs.forEach(column => {
     const status = column.getAttribute("data-status");
     // Reset column content while preserving the column title
+
     column.innerHTML = `<div class="column-head-div">
                           <span class="dot" id="${status}-dot"></span>
                           <h4 class="columnHeader">${status.toUpperCase()}</h4>
@@ -106,9 +106,11 @@ function filterAndDisplayTasksByBoard(boardName) {
       taskElement.setAttribute('data-task-id', task.id);
 
       // Listen for a click event on each task and open a modal
-      taskElement.click() => { 
+      taskElement.addEventListener('click',() => {  // fix:added an event listerner
         openEditTaskModal(task);
       });
+
+
 
       tasksContainer.appendChild(taskElement);
     });
