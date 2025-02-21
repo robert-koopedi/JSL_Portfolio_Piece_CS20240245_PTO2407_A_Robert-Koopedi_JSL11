@@ -116,23 +116,22 @@ function filterAndDisplayTasksByBoard(boardName) {
 
 
 
-function refreshTasksUI() {
-  filterAndDisplayTasksByBoard(activeBoard);
-}
+// function refreshTasksUI() {
+//   filterAndDisplayTasksByBoard(activeBoard);
+// }
 
 // Styles the active board by adding an active class
 // TASK: Fix Bugs
 function styleActiveBoard(boardName) {
-  document.querySelectorAll('.board-btn').foreach(btn => { 
-
-    if(btn.textContent === boardName) {
-      btn.add('active') 
-    }
-    else {
-      btn.remove('active'); 
+  document.querySelectorAll('.board-btn').forEach(btn => {
+    if (btn.innerText.trim() === boardName.trim()) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
     }
   });
 }
+
 
 
 function addTaskToUI(task) {
@@ -163,17 +162,40 @@ function addTaskToUI(task) {
   tasksContainer.appendChild(taskElement);
 }
 
+// Refresh tasks UI after adding a new task
+function refreshTasksUI() {
+  if (activeBoard) {
+    filterAndDisplayTasksByBoard(activeBoard);
+  } else {
+    console.error('No active board selected');
+  }
+}
 
 
 function setupEventListeners() {
-    document.getElementById('cancel-edit-btn').addEventListener('click', () => toggleModal(false, elements.editTaskModal));
-    document.getElementById('cancel-add-task-btn').addEventListener('click', () => toggleModal(false));
-    elements.hideSideBarBtn.addEventListener('click', () => toggleSidebar(false));
-    elements.showSideBarBtn.addEventListener('click', () => toggleSidebar(true));
-    elements.themeSwitch.addEventListener('change', toggleTheme);
-    elements.createNewTaskBtn.addEventListener('click', () => toggleModal(true));
-    elements.modalWindow.addEventListener('submit', addTask);
+  if (elements.cancelEditBtn) {
+      elements.cancelEditBtn.addEventListener('click', () => toggleModal(false, elements.editTaskModal));
   }
+  if (elements.cancelAddTaskBtn) {
+      elements.cancelAddTaskBtn.addEventListener('click', () => toggleModal(false));
+  }
+  if (elements.showSideBarBtn) {
+      elements.showSideBarBtn.addEventListener('click', () => toggleSidebar(true));
+  }
+  if (elements.sidebar) {
+      elements.sidebar.addEventListener('click', () => toggleSidebar(false));
+  }
+  if (elements.themeSwitch) {
+      elements.themeSwitch.addEventListener('change', toggleTheme);
+  }
+  if (elements.createNewTaskBtn) {
+      elements.createNewTaskBtn.addEventListener('click', () => toggleModal(true));
+  }
+  if (elements.modalWindow) {
+      elements.modalWindow.addEventListener('submit', addTask);
+  }
+}
+
   
   // Cancel editing task event listener
    // Cancel editing task event listener
@@ -238,24 +260,43 @@ function addTask(event) {
   event.preventDefault(); 
 
   //Assign user input to the task object
-    const task = {
-      title: document.getElementById('task-title').value,
-      description: document.getElementById('task-description').value,
-      status: document.getElementById('task-status').value,
-      board: activeBoard,
-      id: Date.now()
-    };
-    
-    const newTask = createNewTask(task);
-    if (newTask) {
-      addTaskToUI(newTask);
-      toggleModal(false);
-      elements.filterDiv.style.display = 'none'; // Also hide the filter overlay
-      event.target.reset();
-      refreshTasksUI();
-    }
+   const titleInput = document.getElementById('title-input');
+  const descInput = document.getElementById('desc-input');
+  const statusSelect = document.getElementById('select-status');
+  
+  if (!titleInput || !descInput || !statusSelect) {
+    console.error('Required form fields are missing');
+    return;
+  }
+
+  const title = titleInput.value;
+  const description = descInput.value;
+  const status = statusSelect.value || 'todo';
+
+  if (title.trim() || description.trim()) {
+    const newTask = createNewTask({
+      title,
+      description,
+      status,
+      board: activeBoard
+    });
+
+    addTaskToUI(newTask);
+
+    toggleModal(false);
+    elements.filterDiv.style.display = 'none';
+
+    event.target.reset();
+
+    refreshTasksUI();
+  } else {
+    console.error('Title and Description cannot be empty');
+    alert('Title and description cannot be empty');
+  }
 }
 
+
+   
 
 function toggleSidebar(show) {
   document.body.classList.toggle('sidebar-visible', show);
@@ -310,18 +351,20 @@ function deleteTaskFromModal(taskId) {
 
 function saveTaskChanges(taskId) {
   // Get new user inputs
+  const updatedTask = {
+    title: document.getElementById('edit-task-title-input').value,
+    description: document.getElementById('edit-task-desc-input').value,
+    status: document.getElementById('edit-select-status').value,
+  };
 
-
-  // Create an object with the updated task details
-
-
-  // Update task using a hlper functoin
-
+  // Update task using a helper function
+  patchTask(taskId, updatedTask);
 
   // Close the modal and refresh the UI to reflect the changes
-
+  toggleModal(false, elements.editTaskModal);
   refreshTasksUI();
 }
+
 
 /*************************************************************************************************************************************************/
 
