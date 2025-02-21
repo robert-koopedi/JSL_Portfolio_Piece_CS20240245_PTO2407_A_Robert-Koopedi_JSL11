@@ -175,7 +175,7 @@ function setupEventListeners() {
   // Cancel editing task event listener
    // Cancel editing task event listener
    const cancelEditBtn = document.getElementById('cancel-edit-btn');
-   cancelEditBtn.addEventListener('click',() => toggleModal(false, elements.editTaskModal)); //fix: added an event listener
+   cancelEditBtn.addEventListener('click',() => toggleModal(false, elements.editTaskModal)); 
  
   // Cancel adding new task event listener
   const cancelAddTaskBtn = document.getElementById('cancel-add-task-btn');
@@ -192,8 +192,12 @@ function setupEventListeners() {
   });
 
   // Show sidebar event listener
+  if(elements.hideSideBarBtn) {
   elements.hideSideBarBtn.addEventListener('click',() => toggleSidebar(false));// fix: added an event lister
-  elements.showSideBarBtn.addEventListener('click',() => toggleSidebar(true)); //fix: added an event listener
+  }
+  if(elements.showSideBarBtn) {
+  elements.showSideBarBtn.addEventListener('click',() => toggleSidebar(true)); 
+  }
 
   // Theme switch event listener
   elements.themeSwitch.addEventListener('change', toggleTheme);
@@ -225,8 +229,13 @@ function addTask(event) {
 
   //Assign user input to the task object
     const task = {
-
+      title: document.getElementById('task-title').value,
+      description: document.getElementById('task-description').value,
+      status: document.getElementById('task-status').value,
+      board: activeBoard,
+      id: Date.now()
     };
+    
     const newTask = createNewTask(task);
     if (newTask) {
       addTaskToUI(newTask);
@@ -239,10 +248,14 @@ function addTask(event) {
 
 
 function toggleSidebar(show) {
-
+  elements.sidebar.style.display = show ? 'block' : 'none';
+  localStorage.setItem('showSideBar', show);
 }
 
 function toggleTheme() {
+  document.body.classList.toggle('light-theme');
+  const isLight = document.body.classList.contains('light-theme');
+  localStorage.setItem('light-theme', isLight ? 'enabled' : 'disabled');
 
 }
 
