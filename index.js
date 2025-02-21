@@ -22,17 +22,20 @@ function initializeData() {
 
 // TASK: Get elements from the DOM
 const elements = {
-  themeSwitch: document.getElementById('switch'),
   headerBoardName: document.getElementById('header-board-name'),
-  showSideBarBtn: document.getElementById('show-side-bar-btn'),
-  hideSideBarBtn: document.getElementById('hide-side-bar-btn'),
-  editBoardBtn: document.getElementById('edit-board-btn'),
-  deleteBoardBtn: document.getElementById('delete-board-btn'),
+  boardsNavLinksDiv: document.getElementById('boards-nav-links-div'),
   columnDivs: document.querySelectorAll('.column-div'),
-  createNewTaskBtn: document.getElementById('add-new-task-btn'),
-  editTaskModal: document.querySelector('.edit-task-modal-window'),
-  modalWindow: document.getElementById('new-task-modal-window'),
   filterDiv: document.getElementById('filterDiv'),
+  modalWindow: document.getElementById('new-task-modal-window'),
+  editTaskModal: document.querySelector('.edit-task-modal-window'),
+  themeSwitch: document.getElementById('switch'),
+  createNewTaskBtn: document.getElementById('add-new-task-btn'),
+  cancelAddTaskBtn: document.getElementById('cancel-add-task-btn'),
+  cancelEditBtn: document.getElementById('cancel-edit-btn'),
+  showSideBarBtn: document.getElementById('show-side-bar-btn'),
+  sidebar: document.getElementById('side-bar'),
+  saveChanges: document.getElementById('save-task-changes-btn'),
+  deleteButton: document.getElementById('delete-task-btn')
 
 }
 
@@ -40,18 +43,19 @@ let activeBoard = ""
 
 // Extracts unique board names from tasks
 // TASK: FIX BUGS
-function fetchAndDisplayBoardsAndTasks() {
+Function fetchAndDisplayBoardsAndTasks() {
   const tasks = getTasks();
   const boards = [...new Set(tasks.map(task => task.board).filter(Boolean))];
   displayBoards(boards);
   if (boards.length > 0) {
     const localStorageBoard = JSON.parse(localStorage.getItem("activeBoard"))
-    activeBoard = localStorageBoard ? localStorageBoard ||  boards[0]
+    activeBoard = localStorageBoard ? localStorageBoard :  boards[0]; //fixed the tirnary syntax error
     elements.headerBoardName.textContent = activeBoard
     styleActiveBoard(activeBoard)
     refreshTasksUI();
   }
 }
+;
 
 // Creates different boards in the DOM
 // TASK: Fix Bugs
