@@ -1,5 +1,6 @@
 // utils/taskFunction.js
 
+
 // Simulate fetching tasks from localStorage
 export const getTasks = () => {
   const tasks = localStorage.getItem('tasks');
@@ -38,13 +39,13 @@ export const putTask = (id, updatedTask) => {
     tasks[taskIndex] = updatedTask;
     saveTasks(tasks);
   }
-  location.reload(); // Or better, re-render tasks without reloading
+  // location.reload(); // Or better, re-render tasks without reloading
 };
 
 export const deleteTask = (id) => {
   const tasks = getTasks();
   const updatedTasks = tasks.filter(task => task.id !== id);
   saveTasks(updatedTasks);
-  // Previously: location.reload(); Now: We'll refresh the UI instead.
+  Previously: location.reload();  //Now: We'll refresh the UI instead.
   return updatedTasks; // Optionally return the updated tasks list for further processing
 };

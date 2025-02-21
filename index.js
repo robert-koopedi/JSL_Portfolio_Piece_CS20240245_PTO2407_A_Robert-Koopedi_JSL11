@@ -1,4 +1,5 @@
 // TASK: import helper functions from utils
+
 // TASK: import initialData
 
 
@@ -31,7 +32,7 @@ function fetchAndDisplayBoardsAndTasks() {
   displayBoards(boards);
   if (boards.length > 0) {
     const localStorageBoard = JSON.parse(localStorage.getItem("activeBoard"))
-    activeBoard = localStorageBoard ? localStorageBoard ;  boards[0]; 
+    activeBoard = localStorageBoard ? localStorageBoard ||  boards[0]
     elements.headerBoardName.textContent = activeBoard
     styleActiveBoard(activeBoard)
     refreshTasksUI();
@@ -63,6 +64,7 @@ function displayBoards(boards) {
 // TASK: Fix Bugs
 function filterAndDisplayTasksByBoard(boardName) {
   const tasks = getTasks(); // Fetch tasks from a simulated local storage function
+  const filteredTasks = tasks.filter(task => task.board === boardName);
   const filteredTasks = tasks.filter(task => task.board = boardName);
 
   // Ensure the column titles are set outside of this function or correctly initialized before this function runs
@@ -103,7 +105,7 @@ function refreshTasksUI() {
 // TASK: Fix Bugs
 function styleActiveBoard(boardName) {
   document.querySelectorAll('.board-btn').foreach(btn => { 
-    
+
     if(btn.textContent === boardName) {
       btn.add('active') 
     }
@@ -133,7 +135,7 @@ function addTaskToUI(task) {
   taskElement.className = 'task-div';
   taskElement.textContent = task.title; // Modify as needed
   taskElement.setAttribute('data-task-id', task.id);
-  
+
   tasksContainer.appendChild(); 
 }
 
@@ -191,7 +193,7 @@ function addTask(event) {
 
   //Assign user input to the task object
     const task = {
-      
+
     };
     const newTask = createNewTask(task);
     if (newTask) {
@@ -205,24 +207,24 @@ function addTask(event) {
 
 
 function toggleSidebar(show) {
- 
+
 }
 
 function toggleTheme() {
- 
+
 }
 
 
 
 function openEditTaskModal(task) {
   // Set task details in modal inputs
-  
+
 
   // Get button elements from the task modal
 
 
   // Call saveTaskChanges upon click of Save Changes button
- 
+
 
   // Delete task using a helper function and close the task modal
 
@@ -232,13 +234,13 @@ function openEditTaskModal(task) {
 
 function saveTaskChanges(taskId) {
   // Get new user inputs
-  
+
 
   // Create an object with the updated task details
 
 
   // Update task using a hlper functoin
- 
+
 
   // Close the modal and refresh the UI to reflect the changes
 
