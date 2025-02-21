@@ -132,6 +132,20 @@ function styleActiveBoard(boardName) {
   });
 }
 
+function addDeleteTaskEventListener(taskElement) {
+  const deleteBtn = document.createElement("delete-task-btn");
+  // deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-task-btn");
+
+  deleteBtn.addEventListener("click", (event) => {
+      event.stopPropagation(); // Prevent triggering other events
+      const taskId = taskElement.getAttribute("data-task-id");
+      deleteTask(taskId); // Call deleteTask function
+      refreshTasksUI(); // Refresh the UI after deletion
+  });
+
+  taskElement.appendChild(deleteBtn);
+}
 
 
 function addTaskToUI(task) {
