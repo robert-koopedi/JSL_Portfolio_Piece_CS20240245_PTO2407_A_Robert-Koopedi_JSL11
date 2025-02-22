@@ -35,7 +35,8 @@ const elements = {
   showSideBarBtn: document.getElementById('show-side-bar-btn'),
   sidebar: document.getElementById('side-bar'),
   saveChanges: document.getElementById('save-task-changes-btn'),
-  deleteButton: document.getElementById('delete-task-btn')
+  deleteButton: document.getElementById('delete-task-btn'),
+  hideSideBarBtn: document.getElementById('hide-side-bar-btn')
 
 }
 
@@ -45,17 +46,27 @@ let activeBoard = ""
 // TASK: FIX BUGS
 function fetchAndDisplayBoardsAndTasks() {
   const tasks = getTasks();
+  console.log("Fetched tasks:", tasks);
+
+  if (!tasks || tasks.length === 0) {
+    console.warn("No tasks found in localStorage.");
+    return;
+  }
+
   const boards = [...new Set(tasks.map(task => task.board).filter(Boolean))];
   
   if (boards.length > 0) {
-    activeBoard = JSON.parse(localStorage.getItem("activeBoard")) || boards[0];
-    if (elements.headerBoardName) {
-      elements.headerBoardName.textContent = activeBoard;
-    }
+    const localStorageBoard = JSON.parse(localStorage.getItem("activeBoard")); //parses the board from JSON
 
+    // activeBoard = JSON.parse(localStorage.getItem("activeBoard")) || boards[0];
+    activeBoard = localStorageBoard ? localStorageBoard : boards[0];  
+    
+    elements.headerBoardName.textContent = activeBoard;
     styleActiveBoard(activeBoard);
     filterAndDisplayTasksByBoard(activeBoard);
     displayBoards(boards);
+    refreshTasksUI();
+
   } else {
     console.warn('No boards found!');
   }
@@ -86,8 +97,8 @@ function displayBoards(boards) {
 // TASK: Fix Bugs
 function filterAndDisplayTasksByBoard(boardName) {
   const tasks = getTasks();
-  const filteredTasks = tasks.filter(task => task.board === boardName);
-
+  console.log("filtered tasks for board:,", boardName, tasks);
+ 
   elements.columnDivs.forEach(column => {
     const status = column.getAttribute("data-status");
     column.innerHTML = `<div class="column-head-div">
@@ -98,16 +109,21 @@ function filterAndDisplayTasksByBoard(boardName) {
     const tasksContainer = document.createElement("div");
     column.appendChild(tasksContainer);
 
-    filteredTasks.filter(task => task.status === status).forEach(task => { 
+     const filteredTasks = tasks.filter(task => task.board === boardName);
+
+     filteredTasks.forEach(task => {
+      console.log("Adding task to UI:", task); // Debugging
+
+    // filteredTasks.filter(task => task.status === status).forEach(task => { 
       const taskElement = document.createElement("div");
       taskElement.classList.add("task-div");
       taskElement.textContent = task.title;
       taskElement.setAttribute('data-task-id', task.id);
 
       // Add click event to each task to open the edit modal
-      taskElement.addEventListener('click', () => { 
-        openEditTaskModal(task);
-      });
+      taskElement.addEventListener('click', () => 
+        openEditTaskModal(task));
+      
 
       tasksContainer.appendChild(taskElement);
     });
@@ -133,18 +149,18 @@ function styleActiveBoard(boardName) {
 }
 
 function addDeleteTaskEventListener(taskElement) {
-  const deleteBtn = document.createElement("delete-task-btn");
-  // deleteBtn.textContent = "Delete";
-  deleteBtn.classList.add("delete-task-btn");
+//   // const deleteButton = document.createElement("button");
+// //   //deleteButton.textContent = "Delete";
+// deleteButton.classList.add("delete-task-btn");
 
-  deleteBtn.addEventListener("click", (event) => {
-      event.stopPropagation(); // Prevent triggering other events
+deleteButton.addEventListener("click", (event) => {
+      // event.stopPropagation(); // Prevent triggering other events
       const taskId = taskElement.getAttribute("data-task-id");
       deleteTask(taskId); // Call deleteTask function
       refreshTasksUI(); // Refresh the UI after deletion
   });
 
-  taskElement.appendChild(deleteBtn);
+  taskElement.appendChild(deleteButton);
 }
 
 
@@ -187,61 +203,97 @@ function refreshTasksUI() {
 
 
 function setupEventListeners() {
-  if (elements.cancelEditBtn) {
-      elements.cancelEditBtn.addEventListener('click', () => toggleModal(false, elements.editTaskModal));
-  }
-  if (elements.cancelAddTaskBtn) {
-      elements.cancelAddTaskBtn.addEventListener('click', () => toggleModal(false));
-  }
-  if (elements.showSideBarBtn) {
-      elements.showSideBarBtn.addEventListener('click', () => toggleSidebar(true));
-  }
-  if (elements.sidebar) {
-      elements.sidebar.addEventListener('click', () => toggleSidebar(false));
-  }
-  if (elements.themeSwitch) {
-      elements.themeSwitch.addEventListener('change', toggleTheme);
-  }
-  if (elements.createNewTaskBtn) {
-      elements.createNewTaskBtn.addEventListener('click', () => toggleModal(true));
-  }
-  if (elements.modalWindow) {
-      elements.modalWindow.addEventListener('submit', addTask);
-  }
-}
-
+    // Cancel editing task event listener
+  //   if (elements.cancelEditBtn) {
+  //     elements.cancelEditBtn.addEventListener('click', () => {
+  //       toggleModal(false, elements.editTaskModal);
+  //     });
+  //   }
   
-  // Cancel editing task event listener
-   // Cancel editing task event listener
-   const cancelEditBtn = document.getElementById('cancel-edit-btn');
-   cancelEditBtn.addEventListener('click',() => toggleModal(false, elements.editTaskModal)); 
- 
-  // Cancel adding new task event listener
-  const cancelAddTaskBtn = document.getElementById('cancel-add-task-btn');
-  cancelAddTaskBtn.addEventListener('click', () => {
-    toggleModal(false);
-    elements.filterDiv.style.display = 'none'; // Also hide the filter overlay
-  });
+  //   // Cancel adding new task event listener
+  //   if (elements.cancelAddTaskBtn) {
+  //     elements.cancelAddTaskBtn.addEventListener('click', () => {
+  //       toggleModal(false);
+  //       elements.filterDiv.style.display = 'none'; // Hide the filter overlay
+  //     });
+  //   }
+  
+  //   // Clicking outside the modal to close it
+  //   if (elements.filterDiv) {
+  //     elements.filterDiv.addEventListener('click', () => {
+  //       toggleModal(false);
+  //       elements.filterDiv.style.display = 'none'; // Hide the filter overlay
+  //     });
+  //   }
+  
+  //   // Save changes to task
+  //   if (elements.saveChanges) {
+  //     elements.saveChanges.addEventListener('click', () => {
+  //       const taskId = elements.editTaskModal.getAttribute('data-task-id');
+  //       saveTaskChanges(taskId);
+  //     });
+  //   }
+    
+  //    // Show sidebar event listener
+  // if (elements.showSideBarBtn) {
+  //   elements.hideSideBarBtn.addEventListener('click',() => toggleSidebar(false));// fix: added an event lister
+  // }
 
+  //  // Theme switch event listener
+  //  if (elements.themeSwitch) {
+  //    elements.themeSwitch.addEventListener('change', toggleTheme);
+  //  }
 
-  // Clicking outside the modal to close it
-  elements.filterDiv.addEventListener('click', () => {
-    toggleModal(false);
-    elements.filterDiv.style.display = 'none'; // Also hide the filter overlay
-  });
-
-  // Show sidebar event listener
-  if(elements.hideSideBarBtn) {
-  elements.hideSideBarBtn.addEventListener('click',() => toggleSidebar(false));// fix: added an event lister
+  // Show Add New Task Modal event listener
+   if (elements.createNewTaskBtn) {
+     elements.createNewTaskBtn.addEventListener('click', () => {
+       toggleModal(true);
+       elements.filterDiv.style.display = 'block'; // Show the filter overlay
+     });
   }
 
-  if(elements.showSideBarBtn) {
+   // Add new task form submission event listener
+  //  if (elements.modalWindow) {
+     elements.modalWindow.addEventListener('submit', (event) => {
+       event.preventDefault();
+       addTask(event);
+     });
+  //  }
+ }
+
+
+
+    
+    // Cancel editing task event listener
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    cancelEditBtn.addEventListener('click',() => toggleModal(false, elements.editTaskModal)); 
+ 
+   // Cancel adding new task event listener
+   const cancelAddTaskBtn = document.getElementById('cancel-add-task-btn');
+   cancelAddTaskBtn.addEventListener('click', () => {
+     toggleModal(false);
+     elements.filterDiv.style.display = 'none'; // Also hide the filter overlay
+   });
+
+
+   // Clicking outside the modal to close it
+   elements.filterDiv.addEventListener('click', () => {
+     toggleModal(false);
+     elements.filterDiv.style.display = 'none'; // Also hide the filter overlay
+   });
+
+   // Show sidebar event listener
+   if(elements.hideSideBarBtn) {
+   elements.hideSideBarBtn.addEventListener('click',() => toggleSidebar(false));// fix: added an event lister
+   }
+
+   if(elements.showSideBarBtn) {
   elements.showSideBarBtn.addEventListener('click',() => toggleSidebar(true)); 
   }
 
   // Theme switch event listener
-  if(elements.themeSwitch) {
-  elements.themeSwitch.addEventListener('change', toggleTheme);
+   if(elements.themeSwitch) {
+   elements.themeSwitch.addEventListener('change', toggleTheme);
   }
 
   // Show Add New Task Modal event listener
@@ -252,7 +304,7 @@ function setupEventListeners() {
     elements.filterDiv.style.display = 'block'; // Also show the filter overlay
     }
   });
-  }
+//   }
 
   // Add new task form submission event listener
   elements.modalWindow.addEventListener('submit',  (event) => {
@@ -262,8 +314,13 @@ function setupEventListeners() {
 // Toggles tasks modal
 // Task: Fix bugs
 function toggleModal(show, modal = elements.modalWindow) {
-  modal.style.display = show ? 'block' : 'none'; //fix: used the correct tirnary operator
+  if (!modal) {
+    console.error("Modal not found");
+    return;
+  }
+  modal.style.display = show ? 'block' : 'none';
 }
+
 
 
 /*************************************************************************************************************************************************
@@ -273,18 +330,17 @@ function toggleModal(show, modal = elements.modalWindow) {
 function addTask(event) {
   event.preventDefault(); 
 
-  //Assign user input to the task object
-   const titleInput = document.getElementById('title-input');
+  const titleInput = document.getElementById('title-input');
   const descInput = document.getElementById('desc-input');
   const statusSelect = document.getElementById('select-status');
-  
+
   if (!titleInput || !descInput || !statusSelect) {
-    console.error('Required form fields are missing');
+    console.log('Required form fields are missing');
     return;
   }
 
-  const title = titleInput.value;
-  const description = descInput.value;
+  const title = titleInput.value.trim();
+  const description = descInput.value.trim();
   const status = statusSelect.value || 'todo';
 
   if (title.trim() || description.trim()) {
@@ -303,12 +359,11 @@ function addTask(event) {
     event.target.reset();
 
     refreshTasksUI();
-  } else {
-    console.error('Title and Description cannot be empty');
-    alert('Title and description cannot be empty');
+
+
+ 
   }
 }
-
 
    
 
@@ -383,6 +438,7 @@ function saveTaskChanges(taskId) {
 /*************************************************************************************************************************************************/
 
 document.addEventListener('DOMContentLoaded', function() {
+  initializeData()
   init(); // init is called after the DOM is fully loaded
 });
 
@@ -393,4 +449,4 @@ function init() {
   const isLightTheme = localStorage.getItem('light-theme') === 'enabled';
   document.body.classList.toggle('light-theme', isLightTheme);
   fetchAndDisplayBoardsAndTasks(); // Initial display of boards and tasks
-}
+}}
