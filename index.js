@@ -123,10 +123,10 @@ function filterAndDisplayTasksByBoard(boardName) {
     const tasksContainer = document.createElement("div");
     column.appendChild(tasksContainer);
 
-     const filteredTasks = tasks.filter(task => task.board === boardName);
+     const filteredTasks = tasks.filter(task => task.board === boardName && task.status === status);
 
      filteredTasks.forEach(task => {
-      console.log("Adding task to UI:", task); // Debugging
+      console.log("Adding task to UI:", task);
 
     // filteredTasks.filter(task => task.status === status).forEach(task => { 
       const taskElement = document.createElement("div");
@@ -135,10 +135,8 @@ function filterAndDisplayTasksByBoard(boardName) {
       taskElement.setAttribute('data-task-id', task.id);
 
       // Add click event to each task to open the edit modal
-      taskElement.addEventListener('click', () => 
-        openEditTaskModal(task));
+      taskElement.addEventListener('click', () => openEditTaskModal(task));
       
-
       tasksContainer.appendChild(taskElement);
     });
   });
@@ -242,7 +240,7 @@ function setupEventListeners() {
 
   elements.editBoardBtn.addEventListener("click", () => {
     toggleModal(true);
-    elements.filterDiv.style.display = "block"; // Also show the filter overlay
+    elements.filterDiv.style.display = "none"; // Also show the filter overlay
   });
 
   // Add new task form submission event listener
@@ -257,9 +255,10 @@ function setupEventListeners() {
 
 // Toggles tasks modal
 // Task: Fix bugs
-function toggleModal(show, modal= elements.modalWindow) {
-  modal.style.display = show ? "block": "none";
-  
+function toggleModal(show, modal = elements.modalWindow) {
+  if (modal) {
+    modal.style.display = show ? "block" : "none";
+  }
 }
 
 /*************************************************************************************************************************************************
