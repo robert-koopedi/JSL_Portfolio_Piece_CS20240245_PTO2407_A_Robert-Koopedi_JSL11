@@ -34,7 +34,7 @@ const elements = {
   tasksContainers: document.querySelectorAll(".tasks-container"),
   columnDivs: document.querySelectorAll(".column-div"),
   newTaskModalWindow: document.getElementById("new-task-modal-window"),
-  editTaskModalWindow: document.getElementById("edit-task-modal-window"),
+  editTaskModalWindow: document.querySelector(".edit-task-modal-window"),
   modalWindow: document.querySelector(".modal-window"),
   titleInput: document.getElementById("title-input"),
   descInput: document.getElementById("desc-input"),
@@ -260,8 +260,12 @@ function toggleModal(show, modal = elements.modalWindow) {
   }
   
   //Close modals first
-  elements.newTaskModalWindow.style.display = "none";
-  elements.editTaskModalWindow.style.display = "none";
+  if (modal !== elements.newTaskModalWindow) {
+    elements.newTaskModalWindow.style.display = "none";
+  }
+  if (modal !== elements.editTaskModalWindow) {
+    elements.editTaskModalWindow.style.display = "none";
+  }
   // shows the correct modal
   console.log(`Toggling modal: ${show ? "Show" : "Hide"}`);
   modal.style.display = show ? "block" : "none";
@@ -329,32 +333,28 @@ function openEditTaskModal(task) {
     toggleModal(false, elements.editTaskModalWindow);
   }
 
-
+  // Remove existing event listeners (avoid stacking listeners)
   saveTaskChangesBtn.removeEventListener('click', saveTaskChanges);
   deleteTaskBtn.removeEventListener('click', deleteTask);
   cancelEditBtn.removeEventListener('click', cancelEdit);
-  // elements.filterDiv.style.display = "block";
 
-  // Add new event listeners
-  saveTaskChangesBtn.addEventListener("click", saveTaskChanges);
-  deleteTaskBtn.addEventListener("click", deleteTask);
-  cancelEditBtn.addEventListener("click", cancelEdit);
-
+  // Add new event listeners for the updated task
   saveTaskChangesBtn.addEventListener("click", function saveEdit() {
     saveTaskChanges(task.id);
     elements.editTaskModalWindow.style.display = "none"; // Close the modal
   });
 
-  deleteTaskBtn.addEventListener("click", function deleteEdit() {
-    deleteTask(task.id);
+  // Use the already defined deleteTask function
+  deleteTaskBtn.addEventListener("click", function deleteTaskHandler() {
+    deleteTask(task.id);  // Call the existing deleteTask function
     elements.editTaskModalWindow.style.display = "none"; // Close the modal
     refreshTasksUI(); // Refresh the UI after deletion
   });
 
-  cancelEditBtn.addEventListener("click", function cancelEdit() {
-    toggleModal(false, elements.editTaskModalWindow); // Close the modal
-  });
+  cancelEditBtn.addEventListener("click", cancelEdit); // Cancel edit modal
+
   console.log('Opening modal for task:', task);
+  console.log(elements.editTaskModalWindow);
 
   // Show the edit task modal
   toggleModal(true, elements.editTaskModalWindow);
@@ -380,10 +380,6 @@ function saveTaskChanges(taskId) {
    
  }
  
-
-
-
-
 /*************************************************************************************************************************************************/
 
 document.addEventListener('DOMContentLoaded', function() {
