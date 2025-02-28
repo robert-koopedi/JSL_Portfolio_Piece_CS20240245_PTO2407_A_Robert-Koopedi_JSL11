@@ -52,7 +52,6 @@ const elements = {
   
 };
 
-
 let activeBoard = ""
 
 // Extracts unique board names from tasks
@@ -83,7 +82,6 @@ function fetchAndDisplayBoardsAndTasks() {
   }
 }
 
-
 // Creates different boards in the DOM
 // TASK: Fix Bugs
 function displayBoards(boards) {
@@ -104,10 +102,6 @@ function displayBoards(boards) {
   });
 }
 
-
-
-// Filters tasks corresponding to the board name and displays them on the DOM.
-// TASK: Fix Bugs
 function filterAndDisplayTasksByBoard(boardName) {
   const tasks = getTasks();
   console.log("filtered tasks for board:,", boardName, tasks);
@@ -127,21 +121,17 @@ function filterAndDisplayTasksByBoard(boardName) {
      filteredTasks.forEach(task => {
       console.log("Adding task to UI:", task);
 
-    // filteredTasks.filter(task => task.status === status).forEach(task => { 
       const taskElement = document.createElement("div");
       taskElement.classList.add("task-div");
       taskElement.textContent = task.title;
       taskElement.setAttribute('data-task-id', task.id);
 
-      // Add click event to each task to open the edit modal
       taskElement.addEventListener('click', () => openEditTaskModal(task));
       
       tasksContainer.appendChild(taskElement);
     });
   });
 }
-
-
 
 function refreshTasksUI() {
   filterAndDisplayTasksByBoard(activeBoard);
@@ -158,20 +148,6 @@ function styleActiveBoard(boardName) {
     }
   });
 }
-
-
-function addDeleteTaskEventListener(taskElement) {
-
-deleteButton.addEventListener("click", (event) => {
-      event.stopPropagation(); // Prevent triggering other events
-      const taskId = taskElement.getAttribute("data-task-id");
-      deleteTask(taskId); // Call deleteTask function
-      refreshTasksUI(); // Refresh the UI after deletion
-  });
-
-  taskElement.appendChild(deleteButton);
-}
-
 
 function addTaskToUI(task) {
   const column = document.querySelector(`.column-div[data-status="${task.status}"]`
@@ -277,10 +253,8 @@ function toggleModal(show, modal = elements.modalWindow) {
  * **********************************************************************************************************************************************/
 
 function addTask(event) {
-  // Add a new task to the list
   event.preventDefault();
 
-  //Assign user input to the task object
   const task = {
     status: document.getElementById("select-status").value,
     title: document.getElementById("title-input").value,
@@ -292,7 +266,7 @@ function addTask(event) {
   if (newTask) {
     addTaskToUI(newTask);
     toggleModal(false);
-    elements.filterDiv.style.display = "none"; // Also hide the filter overlay
+    elements.filterDiv.style.display = "none"; 
     event.target.reset();
     refreshTasksUI();
   }
@@ -316,7 +290,6 @@ function toggleTheme() {
 }
 
 function openEditTaskModal(task) {
-  // Set task details in modal inputs
   const title = document.getElementById("edit-task-title-input");
   const desc = document.getElementById("edit-task-desc-input");
   const status = document.getElementById("edit-select-status");
@@ -324,7 +297,6 @@ function openEditTaskModal(task) {
   desc.value = task.description;
   status.value = task.status;
 
-  // Remove previous event listeners before adding new ones
   const saveTaskChangesBtn = document.getElementById("save-task-changes-btn");
   const deleteTaskBtn = document.getElementById("delete-task-btn");
   const cancelEditBtn = document.getElementById("cancel-edit-btn");
@@ -333,18 +305,15 @@ function openEditTaskModal(task) {
     toggleModal(false, elements.editTaskModalWindow);
   }
 
-  // Remove existing event listeners (avoid stacking listeners)
   saveTaskChangesBtn.removeEventListener('click', saveTaskChanges);
   deleteTaskBtn.removeEventListener('click', deleteTask);
   cancelEditBtn.removeEventListener('click', cancelEdit);
 
-  // Add new event listeners for the updated task
   saveTaskChangesBtn.addEventListener("click", function saveEdit() {
     saveTaskChanges(task.id);
     elements.editTaskModalWindow.style.display = "none"; // Close the modal
   });
 
-  // Use the already defined deleteTask function
   deleteTaskBtn.addEventListener("click", function deleteTaskHandler() {
     deleteTask(task.id);  // Call the existing deleteTask function
     elements.editTaskModalWindow.style.display = "none"; // Close the modal
@@ -352,11 +321,9 @@ function openEditTaskModal(task) {
   });
 
   cancelEditBtn.addEventListener("click", cancelEdit); // Cancel edit modal
-
   console.log('Opening modal for task:', task);
   console.log(elements.editTaskModalWindow);
 
-  // Show the edit task modal
   toggleModal(true, elements.editTaskModalWindow);
 }
 
@@ -372,9 +339,7 @@ function saveTaskChanges(taskId) {
     board: activeBoard,
   };
 
-    // Update task using a helper functoin
     putTask(taskId, updatedTask);
-    // Close the modal and refresh the UI to reflect the changes
     refreshTasksUI();
     toggleModal(false, elements.editTaskModalWindow);
    
